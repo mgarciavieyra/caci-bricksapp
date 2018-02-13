@@ -1,6 +1,8 @@
 # caci-bricksapp
 
-This codebase is for the CACI test - Stage 1 - User Stories:
+This codebase is for the CACI test.
+
+Stage 1 - User Stories:
 User Story 1: Submit Order
 User Story 2: Get Order by reference number
 User Story 3: Get All Orders
