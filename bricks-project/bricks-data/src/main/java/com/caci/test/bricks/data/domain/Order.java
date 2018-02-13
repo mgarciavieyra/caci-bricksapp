@@ -7,12 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "sale_order")
-@SequenceGenerator(name="seq", initialValue=1, allocationSize=100)
 public class Order extends BaseEntity {
 	
 	@Id
@@ -28,6 +26,9 @@ public class Order extends BaseEntity {
 	
 	@Column(name = "details", nullable = false)
 	private String details;
+
+	@Column(name = "order_status", nullable = false)
+	private String status;
 
 	public BigInteger getId() {
 		return id;
@@ -61,10 +62,18 @@ public class Order extends BaseEntity {
 		this.details = details;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", referenceNumber=" + referenceNumber + ", amount=" + amount + ", details="
-				+ details + "]";
+				+ details + ", orderStatus=" + status + "]";
 	}
 
 }

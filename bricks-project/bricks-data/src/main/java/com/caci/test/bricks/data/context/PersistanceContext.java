@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(entityManagerFactoryRef = "dataEntityManagerFactory", transactionManagerRef = "dataTransactionManager", basePackages = {
         "com.caci.test.bricks.data.repository" })
 @PropertySource("classpath:application.properties")
-@Primary
 public class PersistanceContext {
 
 	private static final Logger logger = LoggerFactory.getLogger(PersistanceContext.class);
@@ -47,21 +45,7 @@ public class PersistanceContext {
 	public static final String VALIDATION_QUERY = "SELECT 1";
 	public static final boolean TEST_ON_BORROW = true;
 
-	/**
-	 * Bean for DB DataSource. During shutdown an exception got logged as a
-	 * warning message related to not being able to unregister JMX beans. This
-	 * was because Spring is trying to close BasicDataSource twice.
-	 * BasicDataSource closes itself automatically during application close.
-	 * Again Spring uses the default destroy method to close the DataSource
-	 * which is already closed and results in this exception. To avoid this, the
-	 * following is used:
-	 * 
-	 * @Bean(destroyMethod = "")
-	 * 
-	 * @return BasicDataSource
-	 */
-	@Bean(destroyMethod = "", name = "dataDS")
-    @Primary
+	@Bean(name = "dataDS")
 	public DataSource dataSource(Environment env) {
 		
 		DataSource ds = new DataSource();
@@ -81,14 +65,7 @@ public class PersistanceContext {
 		return ds;
 	}
 	
-	
-	/**
-	 * Bean for JPA Vendor Adapter.
-	 * 
-	 * @return JpaVendorAdapter
-	 */
 	@Bean(name="dataJpaVendorAdapter")
-	@Primary
 	public JpaVendorAdapter jpaVendorAdapter(Environment env) {
 		HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
 		jpaVendorAdapter.setShowSql(false);
@@ -97,8 +74,7 @@ public class PersistanceContext {
 	}
 
     @Bean(name = "dataEntityManagerFactory")
-    @Primary
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(@Qualifier("dataDS")DataSource dataSource, Environment env,@Qualifier("dataJpaVendorAdapter")JpaVendorAdapter jpaVendorAdapter) {
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(@Qualifier("dataDS")DataSource dataSource, Environment env, @Qualifier("dataJpaVendorAdapter")JpaVendorAdapter jpaVendorAdapter) {
 
 		Properties jpaProperties = new Properties();
 		
@@ -124,9 +100,7 @@ public class PersistanceContext {
 		
 	}
 
-
     @Bean(name = "dataTransactionManager")
-    @Primary
 	public JpaTransactionManager transactionManager(@Qualifier("dataEntityManagerFactory")EntityManagerFactory entityManagerFactory, Environment env) {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
 		transactionManager.setDefaultTimeout(Integer.parseInt(env.getProperty(HIB_JPA_DEFAULT_TIMEOUT)));
